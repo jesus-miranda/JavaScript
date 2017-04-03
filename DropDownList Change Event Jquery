@@ -1,0 +1,39 @@
+$("#Vendedor").change(function () {
+            //var end = this.value;
+            //var firstDropVal = $('#pick').val();
+
+            //ASIGNAR A VENDEDOR
+            var ventasAsignarVendedorUrl = '@Url.Action("AsignarVendedor", "Ventas")';
+
+            var idOrden = @Model.Id;
+            var idVendedor = this.value;
+
+            //alert('Enviando idOrden: ' + idOrden + " idVendedor: " + idVendedor);
+
+            $.ajax({
+                url: ventasAsignarVendedorUrl,
+                method: 'GET',
+                dataType: 'json',
+                async: true,
+                data: { 'idOrden': idOrden, 'idVendedor': idVendedor },
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+
+                    var respuestas = data.split("|");
+
+                    if(respuestas[0] == "1")
+                    {
+                        presentarMensajeToast('success', 'Vendedor asignado al pedido exitosamente', 'Exito');
+                    }
+                    else
+                    {
+                        presentarMensajeToast('error', respuestas[1], 'Error');
+                    }
+
+                },
+                error: function (data) {
+                    presentarMensajeToast('error', 'Algo ocurrio mal, intentalo nuevamente', 'Error');
+                }
+            });
+
+        });

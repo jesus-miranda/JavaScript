@@ -1,0 +1,88 @@
+jQuery("#editable").jqGrid({
+
+    url: '/Ventas/GetGridData',
+    postData: {
+        idPedido: @Model.Id,
+    },
+    //editurl: '/Ventas/GridEdit',
+    datatype: 'json',
+    mtype: 'GET',
+    loadonce: true,
+    colNames: ['Id','Producto', 'Formato', 'Pedido', 'Bare'],
+    colModel: [
+        { key: true, hidden: true, name: "Id", index: "Id", width: '0%', align: 'center' },
+        { key: false, name: "Descripcion", index: "Descripcion", editable: false, width: '50%', align: 'left' },
+        { key: false, name: "Nombre", index: "Nombre", editable: false, width: '25%', align: 'center' },
+        { key: false, name: "CA", index: "CA", editable: false, width: '25%', align: 'center' },
+        { key: false, name: "Bare", index: "Bare", editable: true, width: '25%', align: 'center', editrules: { integer: true, required: true}
+            ,editoptions: {
+                type: "number",
+                step: "1",
+                min: "0",
+                max: "1000",
+                pattern: "[0-9]",
+                title: "Esto debe ser un número entero sin decimales"
+            }
+        },
+    ],
+    pager: jQuery('#pager'),
+    rowNum: 100,
+    rowList: [100, 200, 300, 400],
+    viewrecords: true,
+    //caption: 'Productos',
+    emptyrecords: 'No hay información disponible',
+    jsonReader:{
+        root: "rows",
+        page: "page",
+        total: "total",
+        records: "records",
+        repeatitems: false,
+        id: "0"
+    },
+    autowidth: true,
+    scrollerbar:true,
+    height: '200',
+    multiselect: false,
+    sortname: 'Id',
+    sortorder: "asc",
+
+    cellEdit: true,
+    cellsubmit: 'clientArray',
+    editurl: 'clientArray',
+
+    beforeSaveCell: function (rowid, cellname, value, iRow, iCol) {
+
+    },
+
+    afterSaveCell: function (rowid, cellname, value, iRow, iCol) {
+
+    },
+
+    afterEditCell: function(rowid, cellname, value, iRow, iCol) {
+
+                        // Get a handle to the actual input field
+                        var inputControl = jQuery('#' + (iRow) + '_' + cellname);
+
+                        // Listen for focus lost
+                        inputControl.bind("focusout", function(e) {
+
+                            jQuery("#editable").jqGrid("editCell", iRow, iCol, false);
+                            
+                        }); // End focusout binding
+
+                        // Listen for enter (and shift-enter)
+                        inputControl.bind("keydown",function(e) {
+
+                            if (e.keyCode === 13 || e.keyCode === 9) {  // Enter key:
+                                var increment = e.shiftKey ? -1 : 1;
+
+                                // Do not go out of bounds
+                                var lastRowInd = jQuery("#editable").jqGrid("getGridParam","reccount")
+                                if ( iRow+increment == 0 || iRow+increment == lastRowInd+1)
+                                    return;   // we could re-edit current cell or wrap
+                                else
+                                    jQuery("#editable").jqGrid("editCell",iRow+increment,iCol,true);
+                            }
+                        }); // End keydown binding
+                    }
+                });

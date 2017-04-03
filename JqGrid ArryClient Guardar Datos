@@ -1,0 +1,80 @@
+$('#btnGuardar15').click(function(){
+  var l = Ladda.create(this);
+  l.start();
+
+  var urlSalvarDatos = '@Url.Action("GuardarDatosMasivos15", "Ventas")';
+
+  var model = {
+      Id: "",
+      Cantidad: "",
+      Adicional: "",
+      Bare: ""
+  }
+
+  var modelos = new Array(model);
+
+  var ids = jQuery('#editable').jqGrid('getDataIDs');
+
+  //$(ids).each(function (index, element) {
+  //    $("#editable").jqGrid('saveRow', index);
+
+  //    console.log('saveRow en: ' + element);
+  //});
+
+  for (var i = 0; i < ids.length; i++) {
+
+      var rowId = ids[i];
+
+      var rowData = jQuery('#editable').jqGrid('getRowData', rowId);
+
+      model = {
+          Id: rowData.Id,
+          Cantidad: rowData.Cantidad,
+          Adicional: rowData.Adicional,
+          Bare: '0'
+      };
+
+      modelos.push(model);
+  }
+
+  var datos = JSON.stringify(modelos);
+
+  //alert(datos);
+
+  $.ajax({
+
+      url: urlSalvarDatos,
+      type: 'POST',
+      //dataType: 'json',
+      //async: true,
+      //data: { 'datos': datos },
+      data: { forms: datos},
+      //contentType: 'application/json; charset=utf-8',
+      success: function (data) {
+
+          var respuestas = data.split("|");
+
+                        if(respuestas[0] == "1")
+                        {
+                            presentarMensajeToast('success', respuestas[1], 'Exito');
+                        }
+                        else
+                        {
+                            presentarMensajeToast('error', respuestas[1], 'Error');
+                        }
+
+                        $('#editable').jqGrid('setGridParam', { datatype: 'json' }).trigger('reloadGrid');
+
+                    },
+                    error: function (data) {
+                        presentarMensajeToast('error', 'Algo ocurrio mal, intentalo nuevamente', 'Error');
+
+                        $('#editable').jqGrid('setGridParam', { datatype: 'json' }).trigger('reloadGrid');
+                    }
+
+                }).always(function() {
+                    l.stop();
+                    ActualizarTotal();
+                });
+
+            });

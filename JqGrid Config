@@ -1,0 +1,5 @@
+//Configuración jqGrid
+$.jgrid.defaults.recordtext = "Registro {0} - {1} de {2}";
+$.jgrid.defaults.emptyrecords =  "Sin registros que mostrar";
+$.jgrid.defaults.loadtext = "Cargando...";
+$.jgrid.defaults.pgtext = "Página {0} de {1}";
